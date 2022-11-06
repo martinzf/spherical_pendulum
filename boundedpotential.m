@@ -14,10 +14,9 @@ function [t,x]=boundedpotential(t0,x0,sign,m,U,E,tp,tol)
     xspan = [tp(1)+tol tp(2)-tol];
     % Half motion
     [x,t] = ode45(dtdx,xspan,t0,odeset('AbsTol',tol));
-    % Applying initial conditions
-    x = x-x(end)+tp(2); 
+    % Applying initial conditions 
     [~,idx]= min(abs(x-x0));
-    t = t-sign*t(idx);
+    t = t-sign*t(idx)+t0;
     % Full motion
     t = [t; t(end)+cumsum(flipud(diff(t)))];
     x = [x; flipud(x(1:end-1))];
