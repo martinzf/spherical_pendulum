@@ -6,7 +6,7 @@ tend = 60;
 theta0 = pi/2;
 thetadot0 = 0;
 phi0 = 0;
-phidot0 = 1;
+phidot0 = 0;
 % Mass
 m = 1;
 % Pendulum length
@@ -30,13 +30,10 @@ if (theta0 < tol || pi-theta0 < tol) && abs(thetadot0) < tol
 elseif abs(phidot0) < tol
     % Position and velocity in theta
     thetadot = @(t,theta) [theta(2);k*sin(theta(1))];
-    [t,thetavec] = ode89(thetadot, ...
-        [t0 tend], ...
-        [theta0;thetadot0], ...
-        odeset('AbsTol',tol));
-    theta = thetavec(:,1);
+    [t,thetavec] = rungekutta(thetadot,t0,tend,tol,[theta0;thetadot0]);
+    theta = thetavec(1,:);
     % Phi
-    phi = phi0*ones(length(t),1);
+    phi = phi0*ones(1,length(t));
 % General problem
 else
     % Effective kinetic energy
