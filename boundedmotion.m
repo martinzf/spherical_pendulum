@@ -13,7 +13,7 @@ function [t,x]=boundedmotion(t0,x0,sign,m,U,E,tp,tol)
     dtdx = @(x,t) sqrt(m./(2*(E-U(x))));
     xspan = [tp(1)+tol tp(2)-tol];
     % Half motion
-    [x,t] = ode45(dtdx,xspan,t0,odeset('AbsTol',tol));
+    [x,t] = ode89(dtdx,xspan,t0,odeset('AbsTol',tol));
     % Applying initial conditions 
     [~,idx]= min(abs(x-x0));
     t = t-sign*t(idx)+t0;

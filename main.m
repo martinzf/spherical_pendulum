@@ -9,12 +9,12 @@ phi0 = 0;
 phidot0 = 1;
 % Mass
 m = 1;
-% Gravitational acceleration
-g = 9.8;
 % Pendulum length
 l = 1;
+% Gravitational acceleration
+g = 9.8;
 % Error tolerance
-tol = 1e-5;
+tol = 1e-10;
 maxiter = 100;
 
 k = g/l;
@@ -30,7 +30,7 @@ if (theta0 < tol || pi-theta0 < tol) && abs(thetadot0) < tol
 elseif abs(phidot0) < tol
     % Position and velocity in theta
     thetadot = @(t,theta) [theta(2);k*sin(theta(1))];
-    [t,thetavec] = ode45(thetadot, ...
+    [t,thetavec] = ode89(thetadot, ...
         [t0 tend], ...
         [theta0;thetadot0], ...
         odeset('AbsTol',tol));
@@ -79,7 +79,7 @@ else
         ftheta = fseries(t,theta,4);
     end
     dphidt = @(t,phi) c./sin(ftheta(t)).^2;
-    [t,phi] = ode45(dphidt, [t0 tend], phi0,odeset('AbsTol',tol));
+    [t,phi] = ode89(dphidt, [t0 tend], phi0,odeset('AbsTol',tol));
     theta = ftheta(t);
 end
 
@@ -87,6 +87,7 @@ end
 xyz = l*[sin(theta).*cos(phi),sin(theta).*sin(phi),cos(theta)];
 % Line object
 an = animatedline('Marker','.');
+title('Spherical pendulum')
 % Force 3D view
 view(3) 
 % Axis limits
@@ -101,11 +102,14 @@ xlabel('X')
 ylabel('Y')
 zlabel('Z')
 grid on
+% Time text
+txt = annotation('textbox',[.1,.875,.1,.1],'String','t=0');
 % Timer
 a = tic;
 for i = 1:length(t)
     clearpoints(an)
     addpoints(an,[0 xyz(i,1)],[0 xyz(i,2)],[0 xyz(i,3)])
+    set(txt,'String',['t=',num2str(t(i))])
     while toc(a) < t(i)
     end
     drawnow
