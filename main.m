@@ -2,7 +2,7 @@ clear; clf; clc
 % Parameters
 % Initial conditions
 t0 = 0;
-tend = 10;
+tend = 20;
 theta0 = pi/2;
 thetadot0 = 0;
 phi0 = 0;
@@ -14,7 +14,7 @@ l = 1;
 % Gravitational acceleration
 g = 9.8;
 % Error tolerance
-tol = 1e-10;
+tol = 1e-5;
 maxiter = 100;
 
 k = g/l;
@@ -86,8 +86,17 @@ end
 % Cartesian coords
 xyz = l*[sin(theta).*cos(phi),sin(theta).*sin(phi),cos(theta)];
 % Line object
+hold on
 an = animatedline('Marker','.');
 title('Spherical pendulum')
+% Spherical grid
+[X,Y,Z] = sphere;
+X = l*X;
+Y = l*Y;
+Z = l*Z;
+mesh(X,Y,Z)
+alpha .5
+hold off
 % Force 3D view
 view(3) 
 % Axis limits
