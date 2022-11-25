@@ -2,7 +2,7 @@ clear; clf; clc
 % Parameters
 % Initial conditions
 t0 = 0;
-tend = 20;
+tend = 60;
 theta0 = pi/2;
 thetadot0 = 0;
 phi0 = 0;
@@ -14,7 +14,7 @@ l = 1;
 % Gravitational acceleration
 g = 9.8;
 % Error tolerance
-tol = 1e-5;
+tol = 1e-3;
 maxiter = 100;
 
 k = g/l;
@@ -79,12 +79,19 @@ else
         ftheta = fseries(t,theta,4);
     end
     dphidt = @(t,phi) c./sin(ftheta(t)).^2;
-    [t,phi] = ode89(dphidt, [t0 tend], phi0,odeset('AbsTol',tol));
+    [t,phi] = rungekutta(dphidt,t0,tend,tol, phi0);
     theta = ftheta(t);
 end
 
+% Time frames
+delta = .1/tol;
+t = t(1:delta:end);
+theta = theta(1:delta:end);
+phi = phi(1:delta:end);
 % Cartesian coords
-xyz = l*[sin(theta).*cos(phi),sin(theta).*sin(phi),cos(theta)];
+xyz = l*[sin(theta).*cos(phi);
+    sin(theta).*sin(phi);
+    cos(theta)];
 % Line object
 hold on
 an = animatedline('Marker','.');
@@ -117,9 +124,9 @@ txt = annotation('textbox',[.1,.875,.1,.1],'String','t=0');
 a = tic;
 for i = 1:length(t)
     clearpoints(an)
-    addpoints(an,[0 xyz(i,1)],[0 xyz(i,2)],[0 xyz(i,3)])
+    addpoints(an,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
     set(txt,'String',['t=',num2str(t(i))])
     while toc(a) < t(i)
     end
-    drawnow
+    drawnow 
 end

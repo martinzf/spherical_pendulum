@@ -13,11 +13,12 @@ function [t,x]=boundedmotion(t0,x0,sign,m,U,E,tp,tol)
     dtdx = @(x,t) sqrt(m./(2*(E-U(x))));
     xspan = [tp(1)+tol tp(2)-tol];
     % Half motion
-    [x,t] = ode89(dtdx,xspan,t0,odeset('AbsTol',tol));
+    [x,t] = rungekutta(dtdx,xspan(1),xspan(2),tol,t0);
+    %[x,t] = ode89(dtdx,xspan,t0,odeset('AbsTol',tol));
     % Applying initial conditions 
     [~,idx]= min(abs(x-x0));
     t = t-sign*t(idx)+t0;
     % Full motion
-    t = [t; t(end)+cumsum(flipud(diff(t)))];
-    x = [x; flipud(x(1:end-1))];
+    t = [t,t(end)+cumsum(flipud(diff(t)))];
+    x = [x,flipud(x(1:end-1))];
 end
