@@ -1,12 +1,12 @@
-function [t,x]=boundedpotential(t0,x0,sign,m,U,E,tp,tol)
+function [t,x]=boundedmotion(t0,x0,sign,m,U,E,tp,tol)
 % Function solves problem of bounded motion in 1d potential
 % Returns one period of motion
 % t0 = initial time
 % x0 = initial position
 % sign = sense of integration, +-1, ie initial velocity
-% m = mass
+% m = effective mass
 % U(x) = effective potential
-% E = total energy
+% E = effective energy
 % tp = turning points [min max]
 % tol = tolerance
     % Equation of motion

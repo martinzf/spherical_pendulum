@@ -2,11 +2,11 @@ clear; clf; clc
 % Parameters
 % Initial conditions
 t0 = 0;
-tend = 1;
-theta0 = pi;
+tend = 10;
+theta0 = pi/2;
 thetadot0 = 0;
 phi0 = 0;
-phidot0 = 2;
+phidot0 = 1;
 % Mass
 m = 1;
 % Gravitational acceleration
@@ -14,31 +14,37 @@ g = 9.8;
 % Pendulum length
 l = 1;
 % Error tolerance
-tol = 1e-3;
+tol = 1e-5;
 maxiter = 100;
 
 k = g/l;
 % It can be shown L/ml^2 = sin^2(theta)phidot = const.
 c = sin(theta0)^2*phidot0;
 
-% Equilibrium condition, stable or unstable
+% Equilibrium condition, unstable or stable
 if (theta0 < tol || pi-theta0 < tol) && abs(thetadot0) < tol
-    ftheta = @(t) theta0*ones(length(t),1);
-    fphi = @(t) zeros(length(t),1);
+    t = t0:tol:tend;
+    theta = theta0*ones(length(t),1);
+    phi = zeros(length(t),1);
 % Initial velocity in phi = 0 => simple pendulum, motion on a plane
 elseif abs(phidot0) < tol
-    fphi = @(t) phi0*ones(length(t),1);
     % Position and velocity in theta
     thetadot = @(t,theta) [theta(2);k*sin(theta(1))];
-    [t,theta] = ode45(thetadot,[t0 tend],[theta0;thetadot0]);
+    [t,thetavec] = ode45(thetadot, ...
+        [t0 tend], ...
+        [theta0;thetadot0], ...
+        odeset('AbsTol',tol));
+    theta = thetavec(:,1);
+    % Phi
+    phi = phi0*ones(length(t),1);
 % General problem
 else
-    % Kinetic energy
-    T = @(thetadot) 1/2*m*(l*thetadot).^2;
-    % Effective potential
-    U = @(theta) m*l^2*(c^2./(2*sin(theta).^2)+k*cos(theta));
-    % Mechanical energy
-    E = T(thetadot0)+U(theta0);
+    % Effective kinetic energy
+    T = @(thetadot) 1/2*thetadot.^2;
+    % Effective potential energy
+    U = @(theta) c^2./(2*sin(theta).^2)+k*cos(theta);
+    % Effective mechanical energy
+    E = (T(thetadot0)+U(theta0))/(m*l^2);
     % Slope of U
     Uprime = @(theta) -c^2*cos(theta)./sin(theta).^3-k*sin(theta);
     % Find U'(theta) = 0 => minimum 
@@ -67,20 +73,40 @@ else
             sign = -1;
         end
         % Motion of theta
-        [t,theta] = boundedpotential(t0,theta0,sign,m,U,E,[mintheta,maxtheta],tol);
+        [t,theta] = boundedmotion(t0,theta0,sign, ...
+            1,U,E,[mintheta,maxtheta],tol);
         % Approximating theta(t)'s Fourier series
         ftheta = fseries(t,theta,4);
     end
     dphidt = @(t,phi) c./sin(ftheta(t)).^2;
     [t,phi] = ode45(dphidt, [t0 tend], phi0,odeset('AbsTol',tol));
-    % Fitting phi to polynomial
-    pphi = @(time) polyval(polyfit(t,phi,5),time);
-    fphi = @(t) mod(pphi(t),2*pi);
+    theta = ftheta(t);
 end
 
-% Plotting
-t = t0:tol:tend;
-plot(t,ftheta(t),t,fphi(t))
-xlabel('t(s)')
-ylabel('rad')
-legend('\theta', '\phi')
+% Cartesian coords
+xyz = l*[sin(theta).*cos(phi),sin(theta).*sin(phi),cos(theta)];
+% Line object
+an = animatedline('Marker','.');
+% Force 3D view
+view(3) 
+% Axis limits
+lim = 1.2*l; 
+xlim("manual")
+ylim("manual")
+zlim("manual")
+xlim([-lim lim])
+ylim([-lim lim])
+zlim([-lim lim])
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+grid on
+% Timer
+a = tic;
+for i = 1:length(t)
+    clearpoints(an)
+    addpoints(an,[0 xyz(i,1)],[0 xyz(i,2)],[0 xyz(i,3)])
+    while toc(a) < t(i)
+    end
+    drawnow
+end
