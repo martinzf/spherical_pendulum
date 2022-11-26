@@ -8,8 +8,8 @@ function f = fseries(t,x,n)
     f = @(t) a0/2;
     % Higher order terms
     for i=1:n
-        a(i) = 2/T*trapz(t,x.*cos((t-t(1))*2*pi*i/T));
-        b(i) = 2/T*trapz(t,x.*sin((t-t(1))*2*pi*i/T));
-        f = @(t) f(t)+a(i)*cos((t-t(1))*2*pi*i/T)+b(i)*sin((t-t(1))*2*pi*i/T);
+        ai = 2/T*trapz(t,x.*cos((t-t(1))*2*pi*i/T));
+        bi = 2/T*trapz(t,x.*sin((t-t(1))*2*pi*i/T));
+        f = @(t) f(t)+ai*cos((t-t(1))*2*pi*i/T)+bi*sin((t-t(1))*2*pi*i/T);
     end
 end
