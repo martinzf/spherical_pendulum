@@ -1,5 +1,11 @@
 clear; clf; clc
 
+% Error tolerance
+dt = 1e-3;
+dtheta = 1e-3;
+maxiter = 100;
+framedur = .1;
+
 % Initial conditions
 t0 = input('Initial time (s): ');
 tend = input('Final time (s): ');
@@ -32,11 +38,6 @@ g = 9.8;
 k = g/l;
 % It can be shown L/ml^2 = sin^2(theta)phidot = const.
 c = sin(theta0)^2*phidot0;
-% Error tolerance
-dt = 1e-3;
-dtheta = 1e-3;
-maxiter = 100;
-framedur = .1;
 
 % 1. Equilibrium condition, unstable or stable
 if (theta0 < dtheta || pi-theta0 < dtheta) && abs(thetadot0) < dtheta
@@ -115,7 +116,7 @@ else
     % Slope of U
     Uprime = @(theta) -c^2*cos(theta)./sin(theta).^3-k*sin(theta);
     % Find U'(theta) = 0 => minimum 
-    eqtheta = bisec(Uprime,pi/2,pi-dt,dt,maxiter);
+    eqtheta = bisec(Uprime,pi/2,pi-dtheta,dtheta,maxiter);
 
     % 3.1 Stable equilibrium in theta
     if abs(eqtheta-theta0) < dtheta && abs(thetadot0) < dtheta
@@ -195,7 +196,7 @@ txt = annotation('textbox',[.1,.875,.1,.1],'String','t=0');
 % Timer
 a = tic;
 for i = 1:length(t)
-    clearpoints
+    clearpoints(an)
     addpoints(an,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
     set(txt,'String',['t=',num2str(t(i))])
     while toc(a) < t(i)

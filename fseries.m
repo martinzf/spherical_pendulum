@@ -1,6 +1,9 @@
 function f = fseries(t,x,n)
 % Function calculates Fourier series of a periodic function x(t) from one 
-% given period of (t,x) data
+% given period of (t,x) data to order n
+% t = independent variable data
+% x = dependent variable data
+% n = order of series
     % Period
     T = t(end)-t(1);
     % Zeroth term
