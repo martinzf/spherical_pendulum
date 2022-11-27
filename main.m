@@ -181,17 +181,18 @@ phi = phi(1:delta:end);
 xyz = l*[sin(theta).*cos(phi);
     sin(theta).*sin(phi);
     cos(theta)];
-% Line object
+% pendulum and wake line objects
 hold on
-an = animatedline('Marker','.');
+pend = animatedline('Marker','.','MarkerSize',12,'Color','k');
+wake = animatedline('MaximumNumPoints',5,'LineWidth',2, ...
+    'Color',[.8 .8 .8 .5]);
 title('Spherical pendulum')
 % Spherical grid
 [X,Y,Z] = sphere;
 X = l*X;
 Y = l*Y;
 Z = l*Z;
-mesh(X,Y,Z)
-alpha .1
+mesh(X,Y,Z,'FaceAlpha','0.05')
 hold off
 % Force 3D view
 view(3) 
@@ -212,8 +213,9 @@ txt = annotation('textbox',[.1,.875,.1,.1],'String','t=0');
 % Timer
 a = tic;
 for i = 1:length(t)
-    clearpoints(an)
-    addpoints(an,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
+    clearpoints(pend)
+    addpoints(pend,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
+    addpoints(wake,xyz(1,i),xyz(2,i),xyz(3,i))
     set(txt,'String',['t = ',num2str(t(i)),'s'])
     while toc(a) < t(i)
     end
