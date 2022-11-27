@@ -59,10 +59,15 @@ elseif abs(phidot0) < dtheta
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sign(thetadot0), ...
             1,U,E,[0,2*pi],dt); 
-        % Approximating theta(t)'s Fourier series
-        ftheta = fseries(t,theta,100);
-        t = t0:dt:tf;
-        theta = ftheta(t);
+        % Interpolation to obtain periodic theta(t) function
+        [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
+        theta = theta(ia);
+        ttop = round(t(end),1); % Time at which theta = 0 rad
+        t1 = t0:dt:ttop; % 1st revolution
+        t2 = ttop+dt:dt:tf;
+        tq = [t1 mod(t2,ttop-t0)];
+        theta = interp1(t,theta,tq);
+        t = [t1 t2];
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < dtheta
@@ -209,7 +214,7 @@ a = tic;
 for i = 1:length(t)
     clearpoints(an)
     addpoints(an,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
-    set(txt,'String',['t=',num2str(t(i))])
+    set(txt,'String',['t = ',num2str(t(i)),'s'])
     while toc(a) < t(i)
     end
     drawnow 

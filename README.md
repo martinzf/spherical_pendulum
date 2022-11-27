@@ -12,4 +12,4 @@ inputting each value.
 * Wait while the animation loads, MATLAB should open a plot window.
 
 ### Preview
-![Alt Text](testAnimated.gif)
+![Alt Text](preview.gif)
