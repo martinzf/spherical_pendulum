@@ -8,7 +8,7 @@ framedur = .1;
 
 % Initial conditions
 t0 = input('Initial time (s): ');
-tend = input('Final time (s): ');
+tf = input('Final time (s): ');
 theta0 = input('Initial polar coordinate (rad): ');
 thetadot0 = input('Initial polar velocity (rad/s): ');
 phi0 = input('Initial azimuthal coordinate (rad): ');
@@ -21,8 +21,9 @@ end
 phi0 = mod(phi0,2*pi);
 % If the mass is at either of the poles initially, it cannot have azimuthal
 % velocity
-if abs(theta0) < dt || abs(theta0-pi) < dt
+if abs(theta0) < dtheta || abs(theta0-pi) < dtheta
     phidot0 = 0;
+    disp('Initial azimuthal velocity = 0 rad/s')
 else
     phidot0 = input('Initial azimuthal velocity (rad/s): ');
 end
@@ -41,7 +42,7 @@ c = sin(theta0)^2*phidot0;
 
 % 1. Equilibrium condition, unstable or stable
 if (theta0 < dtheta || pi-theta0 < dtheta) && abs(thetadot0) < dtheta
-    t = t0:dt:tend;
+    t = t0:dt:tf;
     theta = theta0*ones(length(t),1);
     phi = zeros(length(t),1);
 
@@ -56,8 +57,13 @@ elseif abs(phidot0) < dtheta
 
     % 2.1 If E > max(U) => motion in theta is unbounded
     if E > k+dtheta
-        thetadot = @(t,theta) sign(thetadot0)*sqrt(2*(E-U(theta)));
-        [t,theta] = rungekutta(thetadot,t0,tend,dt,theta0);
+        % Motion of theta
+        [t,theta] = boundedmotion(t0,theta0,sign(thetadot0), ...
+            1,U,E,[0,2*pi],dt); 
+        % Approximating theta(t)'s Fourier series
+        ftheta = fseries(t,theta,100);
+        t = t0:dt:tf;
+        theta = ftheta(t);
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < dtheta
@@ -69,8 +75,14 @@ elseif abs(phidot0) < dtheta
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
             1,U,E,[0,2*pi],dt);
-        t = [t t(end)+dt:dt:tend];
-        theta = [theta zeros(1,length(t)-length(theta))];
+       % Interpolation for smoother animation
+       [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
+       theta = theta(ia);
+       tinf = round(t(end),1); % Time at which theta = 0 rad
+       t1 = t0:dt:tinf;
+       t2 = tinf+dt:dt:tf;
+       theta = [interp1(t,theta,t1) zeros(1,length(t2))];
+       t = [t1 t2];
 
     % 2.3 If E < max(U) => bounded, periodic motion
     else
@@ -98,7 +110,7 @@ elseif abs(phidot0) < dtheta
         theta = [theta,fliplr(theta(1,1:end-1))];
         % Approximating theta(t)'s Fourier series
         ftheta = fseries(t,theta,4);
-        t = t0:dt:tend;
+        t = t0:dt:tf;
         theta = ftheta(t);
     end
 
@@ -152,7 +164,7 @@ else
 
     % Motion of phi
     dphidt = @(t,phi) c./sin(ftheta(t)).^2;
-    [t,phi] = rungekutta(dphidt,t0,tend,dt,phi0);
+    [t,phi] = rungekutta(dphidt,t0,tf,dt,phi0);
     theta = ftheta(t);
 end
 
