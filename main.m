@@ -3,7 +3,6 @@ clear; clf; clc
 % Error tolerance
 dt = 1e-3;
 dtheta = 1e-3;
-maxiter = 100;
 framedur = .1;
 
 % Initial conditions
@@ -89,7 +88,7 @@ elseif abs(phidot0) < dtheta
         % Find 2 points at which U = E (turning points)
         f = @(theta) U(theta)-E;
         % Find root of f using the bisection method
-        mintheta = bisec(f,dtheta,pi,dtheta,maxiter);
+        mintheta = bisec(f,dtheta,pi,dtheta);
         maxtheta = 2*pi-mintheta;
         % Which turning point are we moving towards?
         % Non-negative velocity
@@ -128,7 +127,7 @@ else
     % Slope of U
     Uprime = @(theta) -c^2*cos(theta)./sin(theta).^3-k*sin(theta);
     % Find U'(theta) = 0 => minimum 
-    eqtheta = bisec(Uprime,pi/2,pi-dtheta,dtheta,maxiter);
+    eqtheta = bisec(Uprime,pi/2,pi-dtheta,dtheta);
 
     % 3.1 Stable equilibrium in theta
     if abs(eqtheta-theta0) < dtheta && abs(thetadot0) < dtheta
@@ -139,8 +138,8 @@ else
         % Find points at which U = E (turning points)
         f = @(theta) U(theta)-E;
         % Find 2 roots of f using the bisection method
-        mintheta = bisec(f,dtheta,eqtheta,dtheta,maxiter);
-        maxtheta = bisec(f,eqtheta,pi-dtheta,dtheta,maxiter);
+        mintheta = bisec(f,dtheta,eqtheta,dtheta);
+        maxtheta = bisec(f,eqtheta,pi-dtheta,dtheta);
         % Which turning point are we moving towards?
         % Non-negative velocity
         if thetadot0 ~= 0

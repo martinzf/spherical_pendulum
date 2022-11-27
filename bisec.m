@@ -1,8 +1,16 @@
 function c = bisec(f,a,b,tol,maxiter)
 % Calculates the root of a function in an interval [a,b] by bisection
+% f = objective function
+% [a,b] = interval in which to find a root
+% tol = tolerance in f
+% maxiter = maximum iterations of method
+    % Default value for maximum iterations
+    if nargin < 5
+        maxiter = 100;
+    end
     it=1;
     % Bolzano's theorem => need f(a) to have a different sign from f(b)
-    if sign(f(a))==sign(f(b))
+    if sign(f(a)) == sign(f(b))
         warning('f(a) and f(b) have the same sign')
         c=NaN;
     else
@@ -25,7 +33,8 @@ function c = bisec(f,a,b,tol,maxiter)
         % Non convergence warning
         if abs(f(c))>tol && it==maxiter
             warning('Did not converge with given max iterations')
-            disp(['Answer given with an absolute error of ',num2str(abs(f(c)))])
+            disp(['Answer given with an absolute error of ', ...
+                num2str(abs(f(c)))])
         end
     end
 end
