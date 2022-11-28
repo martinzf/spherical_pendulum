@@ -65,7 +65,8 @@ elseif abs(phidot0) < dtheta
         ttop = round(t(end),1); % Time at which theta = 0 rad
         t1 = t0:dt:ttop; % 1st revolution
         t2 = ttop+dt:dt:tf;
-        tq = [t1 mod(t2,ttop-t0)];
+        T = t(end)-t(1); % Period
+        tq = [t1 mod(t2,T)];
         theta = interp1(t,theta,tq);
         t = [t1 t2];
 
@@ -112,10 +113,16 @@ elseif abs(phidot0) < dtheta
         % Full period
         t = [t,t(end)+cumsum(fliplr(diff(t)))];
         theta = [theta,fliplr(theta(1,1:end-1))];
-        % Approximating theta(t)'s Fourier series
-        ftheta = fseries(t,theta,4);
-        t = t0:dt:tf;
-        theta = ftheta(t);
+        % Interpolation to obtain periodic theta(t) function
+        [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
+        theta = theta(ia);
+        ttop = round(t(end),1); % Time at which theta = 0 rad
+        t1 = t0:dt:ttop; % 1st revolution
+        t2 = ttop+dt:dt:tf;
+        T = t(end)-t(1); % Period
+        tq = [t1 mod(t2,T)];
+        theta = interp1(t,theta,tq);
+        t = [t1 t2];
     end
 
     % Motion of phi
@@ -162,7 +169,7 @@ else
         % Full period
         t = [t,t(end)+cumsum(fliplr(diff(t)))];
         theta = [theta,fliplr(theta(1,1:end-1))];
-        % Approximating theta(t)'s Fourier series
+        % Interpolation to obtain periodic theta(t) function
         ftheta = fseries(t,theta,4);
     end
 
