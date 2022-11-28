@@ -62,13 +62,10 @@ elseif abs(phidot0) < dtheta
         % Interpolation to obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
-        ttop = round(t(end),1); % Time at which theta = 0 rad
-        t1 = t0:dt:ttop; % 1st revolution
-        t2 = ttop+dt:dt:tf;
         T = t(end)-t(1); % Period
-        tq = [t1 mod(t2,T)];
-        theta = interp1(t,theta,tq);
-        t = [t1 t2];
+        tq = t0:dt:tf;
+        theta = interp1(t,theta,mod(tq,T),'spline','extrap');
+        t = tq;
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < dtheta
@@ -86,7 +83,7 @@ elseif abs(phidot0) < dtheta
        tinf = round(t(end),1); % Time at which theta = 0 rad
        t1 = t0:dt:tinf;
        t2 = tinf+dt:dt:tf;
-       theta = [interp1(t,theta,t1) zeros(1,length(t2))];
+       theta = [interp1(t,theta,t1,'spline','extrap') zeros(1,length(t2))];
        t = [t1 t2];
 
     % 2.3 If E < max(U) => bounded, periodic motion
@@ -116,13 +113,10 @@ elseif abs(phidot0) < dtheta
         % Interpolation to obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
-        ttop = round(t(end),1); % Time at which theta = 0 rad
-        t1 = t0:dt:ttop; % 1st revolution
-        t2 = ttop+dt:dt:tf;
         T = t(end)-t(1); % Period
-        tq = [t1 mod(t2,T)];
-        theta = interp1(t,theta,tq);
-        t = [t1 t2];
+        tq = t0:dt:tf;
+        theta = interp1(t,theta,mod(tq,T),'spline','extrap');
+        t = tq;
     end
 
     % Motion of phi
@@ -170,7 +164,10 @@ else
         t = [t,t(end)+cumsum(fliplr(diff(t)))];
         theta = [theta,fliplr(theta(1,1:end-1))];
         % Interpolation to obtain periodic theta(t) function
-        ftheta = fseries(t,theta,4);
+        [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
+        theta = theta(ia);
+        T = t(end)-t(1); % Period
+        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
     end
 
     % Motion of phi
