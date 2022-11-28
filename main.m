@@ -41,9 +41,8 @@ c = sin(theta0)^2*phidot0;
 
 % 1. Equilibrium condition, unstable or stable
 if (theta0 < dtheta || pi-theta0 < dtheta) && abs(thetadot0) < dtheta
-    t = t0:dt:tf;
-    theta = theta0*ones(length(t),1);
-    phi = zeros(length(t),1);
+    ftheta = @(t) theta0*ones(1,length(t));
+    fphi = @(t) zeros(1,length(t));
 
 % 2. Initial velocity in phi = 0 => simple pendulum, motion on a plane
 elseif abs(phidot0) < dtheta
@@ -59,13 +58,11 @@ elseif abs(phidot0) < dtheta
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sign(thetadot0), ...
             1,U,E,[0,2*pi],dt); 
-        % Interpolation to obtain periodic theta(t) function
+        % Interpolation to numerically obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        tq = t0:dt:tf;
-        theta = interp1(t,theta,mod(tq,T),'spline','extrap');
-        t = tq;
+        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < dtheta
@@ -78,13 +75,11 @@ elseif abs(phidot0) < dtheta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
             1,U,E,[0,2*pi],dt);
        % Interpolation for smoother animation
-       [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
+       [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
        theta = theta(ia);
-       tinf = round(t(end),1); % Time at which theta = 0 rad
-       t1 = t0:dt:tinf;
-       t2 = tinf+dt:dt:tf;
-       theta = [interp1(t,theta,t1,'spline','extrap') zeros(1,length(t2))];
-       t = [t1 t2];
+       tinf = t(end); % Time at which theta = 0 rad
+       ftheta = @(tq) [interp1(t,theta,tq(tq<tinf),'spline','extrap'), ...
+           zeros(1,length(tq(tq>=tinf)))];
 
     % 2.3 If E < max(U) => bounded, periodic motion
     else
@@ -108,19 +103,17 @@ elseif abs(phidot0) < dtheta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
             1,U,E,[mintheta,maxtheta],dt); % One period
         % Full period
-        t = [t,t(end)+cumsum(fliplr(diff(t)))];
-        theta = [theta,fliplr(theta(1,1:end-1))];
-        % Interpolation to obtain periodic theta(t) function
+        t = [t;t(end)+cumsum(flipud(diff(t)))];
+        theta = [theta;flipud(theta(1:end-1))];
+        % Interpolation to numerically obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        tq = t0:dt:tf;
-        theta = interp1(t,theta,mod(tq,T),'spline','extrap');
-        t = tq;
+        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
     end
 
     % Motion of phi
-    phi = phi0*ones(1,length(t));
+    fphi = @(t) phi0*ones(1,length(t));
 
 % 3. General problem
 else
@@ -161,9 +154,9 @@ else
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
             1,U,E,[mintheta,maxtheta],dt); % One period
         % Full period
-        t = [t,t(end)+cumsum(fliplr(diff(t)))];
-        theta = [theta,fliplr(theta(1,1:end-1))];
-        % Interpolation to obtain periodic theta(t) function
+        t = [t;t(end)+cumsum(flipud(diff(t)))];
+        theta = [theta;flipud(theta(1:end-1))];
+        % Interpolation to numerically obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
@@ -172,15 +165,18 @@ else
 
     % Motion of phi
     dphidt = @(t,phi) c./sin(ftheta(t)).^2;
-    [t,phi] = rungekutta(dphidt,t0,tf,dt,phi0);
-    theta = ftheta(t);
+    [t,phi] = ode89(dphidt,[t0 tf],phi0);
+    % Interpolation to numerically obtain phi(t) function
+    [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
+    phi = phi(ia);
+    T = t(end)-t(1); % Period
+    fphi = @(tq) interp1(t,phi,mod(tq,T),'spline','extrap');
 end
 
 % Time frames
-delta = framedur/dt;
-t = t(1:delta:end);
-theta = theta(1:delta:end);
-phi = phi(1:delta:end);
+t = t0:framedur:tf;
+theta = ftheta(t);
+phi = fphi(t);
 % Cartesian coords
 xyz = l*[sin(theta).*cos(phi);
     sin(theta).*sin(phi);
@@ -223,5 +219,5 @@ for i = 1:length(t)
     set(txt,'String',['t = ',num2str(t(i)),'s'])
     while toc(a) < t(i)
     end
-    drawnow 
+    drawnow limitrate
 end
