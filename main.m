@@ -1,8 +1,7 @@
 clear; clf; clc
 
 % Error tolerance
-dt = 1e-3;
-dtheta = 1e-3;
+tol = 1e-3;
 framedur = .1;
 
 % Initial conditions
@@ -20,7 +19,7 @@ end
 phi0 = mod(phi0,2*pi);
 % If the mass is at either of the poles initially, it cannot have azimuthal
 % velocity
-if abs(theta0) < dtheta || abs(theta0-pi) < dtheta
+if abs(theta0) < tol || abs(theta0-pi) < tol
     phidot0 = 0;
     disp('Initial azimuthal velocity = 0 rad/s')
 else
@@ -40,12 +39,12 @@ k = g/l;
 c = sin(theta0)^2*phidot0;
 
 % 1. Equilibrium condition, unstable or stable
-if (theta0 < dtheta || pi-theta0 < dtheta) && abs(thetadot0) < dtheta
+if (theta0 < tol || pi-theta0 < tol) && abs(thetadot0) < tol
     ftheta = @(t) theta0*ones(1,length(t));
     fphi = @(t) zeros(1,length(t));
 
 % 2. Initial velocity in phi = 0 => simple pendulum, motion on a plane
-elseif abs(phidot0) < dtheta
+elseif abs(phidot0) < tol
     % Effective kinetic energy
     T = @(thetadot) 1/2*thetadot.^2;
     % Effective potential
@@ -54,10 +53,10 @@ elseif abs(phidot0) < dtheta
     E = T(thetadot0)+U(theta0);
 
     % 2.1 If E > max(U) => motion in theta is unbounded
-    if E > k+dtheta
+    if E > k+tol
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sign(thetadot0), ...
-            1,U,E,[0,2*pi],dt); 
+            1,U,E,[0,2*pi],tol); 
         % Interpolation to numerically obtain periodic theta(t) function
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
@@ -65,15 +64,15 @@ elseif abs(phidot0) < dtheta
         ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
-    elseif abs(E-k) < dtheta
+    elseif abs(E-k) < tol
         % Sense of integration
         sgn = sign(thetadot0);
-        if abs(theta0) < dtheta && sgn == -1
+        if abs(theta0) < tol && sgn == -1
             theta0 = 2*pi;
         end
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
-            1,U,E,[0,2*pi],dt);
+            1,U,E,[0,2*pi],tol);
        % Interpolation for smoother animation
        [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
        theta = theta(ia);
@@ -86,7 +85,7 @@ elseif abs(phidot0) < dtheta
         % Find 2 points at which U = E (turning points)
         f = @(theta) U(theta)-E;
         % Find root of f using the bisection method
-        mintheta = bisec(f,dtheta,pi,dtheta);
+        mintheta = bisec(f,tol,pi,tol);
         maxtheta = 2*pi-mintheta;
         % Which turning point are we moving towards?
         % Non-negative velocity
@@ -101,7 +100,7 @@ elseif abs(phidot0) < dtheta
         end
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
-            1,U,E,[mintheta,maxtheta],dt); % One period
+            1,U,E,[mintheta,maxtheta],tol); % One period
         % Full period
         t = [t;t(end)+cumsum(flipud(diff(t)))];
         theta = [theta;flipud(theta(1:end-1))];
@@ -126,10 +125,10 @@ else
     % Slope of U
     Uprime = @(theta) -c^2*cos(theta)./sin(theta).^3-k*sin(theta);
     % Find U'(theta) = 0 => minimum 
-    eqtheta = bisec(Uprime,pi/2,pi-dtheta,dtheta);
+    eqtheta = bisec(Uprime,pi/2,pi-tol,tol);
 
     % 3.1 Stable equilibrium in theta
-    if abs(eqtheta-theta0) < dtheta && abs(thetadot0) < dtheta
+    if abs(eqtheta-theta0) < tol && abs(thetadot0) < tol
         ftheta = @(t) eqtheta;
 
     % 3.2 Periodic motion in theta
@@ -137,8 +136,8 @@ else
         % Find points at which U = E (turning points)
         f = @(theta) U(theta)-E;
         % Find 2 roots of f using the bisection method
-        mintheta = bisec(f,dtheta,eqtheta,dtheta);
-        maxtheta = bisec(f,eqtheta,pi-dtheta,dtheta);
+        mintheta = bisec(f,tol,eqtheta,tol);
+        maxtheta = bisec(f,eqtheta,pi-tol,tol);
         % Which turning point are we moving towards?
         % Non-negative velocity
         if thetadot0 ~= 0
@@ -152,7 +151,7 @@ else
         end
         % Motion of theta
         [t,theta] = boundedmotion(t0,theta0,sgn, ...
-            1,U,E,[mintheta,maxtheta],dt); % One period
+            1,U,E,[mintheta,maxtheta],tol); % One period
         % Full period
         t = [t;t(end)+cumsum(flipud(diff(t)))];
         theta = [theta;flipud(theta(1:end-1))];
