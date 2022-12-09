@@ -35,7 +35,8 @@ l = input('Pendulum length (m): ');
 g = 9.8;
 % Renamed constant
 k = g/l;
-% It can be shown L/ml^2 = sin^2(theta)phidot = const.
+% It can be shown Lz/ml^2 = sin^2(theta)phidot = const.
+% where Lz is the angular momentum in the Z-axis
 c = sin(theta0)^2*phidot0;
 
 % 1. Equilibrium condition, unstable or stable
@@ -61,7 +62,7 @@ elseif abs(phidot0) < tol
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < tol
@@ -77,7 +78,7 @@ elseif abs(phidot0) < tol
        [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
        theta = theta(ia);
        tinf = t(end); % Time at which theta = 0 rad
-       ftheta = @(tq) [interp1(t,theta,tq(tq<tinf),'spline','extrap'), ...
+       ftheta = @(tq) [interp1(t,theta,t0+tq(tq<tinf),'spline','extrap'), ...
            zeros(1,length(tq(tq>=tinf)))];
 
     % 2.3 If E < max(U) => bounded, periodic motion
@@ -108,7 +109,7 @@ elseif abs(phidot0) < tol
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
     end
 
     % Motion of phi
@@ -159,7 +160,7 @@ else
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
     end
 
     % Motion of phi
@@ -169,7 +170,7 @@ else
     [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
     phi = phi(ia);
     T = t(end)-t(1); % Period
-    fphi = @(tq) interp1(t,phi,mod(tq,T),'spline','extrap');
+    fphi = @(tq) interp1(t,phi,t0+mod(tq,T),'spline','extrap');
 end
 
 % Time frames
@@ -182,7 +183,8 @@ xyz = l*[sin(theta).*cos(phi);
     cos(theta)];
 % pendulum and wake line objects
 hold on
-pend = animatedline('Marker','.','MarkerSize',12,'Color','k');
+pend = animatedline('MaximumNumPoints',2,'Marker','.','MarkerSize',12, ...
+    'Color','k');
 wake = animatedline('MaximumNumPoints',5,'LineWidth',2, ...
     'Color',[.8 .8 .8 .5]);
 title('Spherical pendulum')
@@ -191,7 +193,7 @@ title('Spherical pendulum')
 X = l*X;
 Y = l*Y;
 Z = l*Z;
-mesh(X,Y,Z,'FaceAlpha','0.05')
+mesh(X,Y,Z,'FaceAlpha','0')
 hold off
 % Force 3D view
 view(3) 
@@ -203,20 +205,19 @@ zlim("manual")
 xlim([-lim lim])
 ylim([-lim lim])
 zlim([-lim lim])
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
+xlabel('X (m)')
+ylabel('Y (m)')
+zlabel('Z (m)')
 grid on
 % Time text
 txt = annotation('textbox',[.1,.875,.1,.1],'String','t=0');
 % Timer
 a = tic;
 for i = 1:length(t)
-    clearpoints(pend)
     addpoints(pend,[0 xyz(1,i)],[0 xyz(2,i)],[0 xyz(3,i)])
     addpoints(wake,xyz(1,i),xyz(2,i),xyz(3,i))
     set(txt,'String',['t = ',num2str(t(i)),'s'])
-    while toc(a) < t(i)
+    while toc(a)+t0 < t(i)
     end
-    drawnow limitrate
+    drawnow 
 end
