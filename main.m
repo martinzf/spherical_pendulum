@@ -60,7 +60,7 @@ elseif abs(phidot0) < tol
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq-t0,T),'spline','extrap');
 
     % 2.2 If E = max(U) => motion in theta is bounded and non periodic
     elseif abs(E-k) < tol
@@ -107,7 +107,7 @@ elseif abs(phidot0) < tol
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq-t0,T),'spline','extrap');
     end
 
     % Motion of phi
@@ -158,7 +158,7 @@ else
         [t,ia,~] = unique(t,'stable'); % Identify non duplicate values 
         theta = theta(ia);
         T = t(end)-t(1); % Period
-        ftheta = @(tq) interp1(t,theta,t0+mod(tq,T),'spline','extrap');
+        ftheta = @(tq) interp1(t,theta,t0+mod(tq-t0,T),'spline','extrap');
     end
 
     % Motion of phi
@@ -168,7 +168,7 @@ else
     [t,ia,~] = unique(t,'stable'); % Identify non duplicate values
     phi = phi(ia);
     T = t(end)-t(1); % Period
-    fphi = @(tq) interp1(t,phi,t0+mod(tq,T),'spline','extrap');
+    fphi = @(tq) interp1(t,phi,t0+mod(tq-t0,T),'spline','extrap');
 end
 
 % Time frames
