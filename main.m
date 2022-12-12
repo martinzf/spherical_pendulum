@@ -27,8 +27,6 @@ else
 end
 
 % Parameters
-% Mass
-m = input('Bob mass (kg): ');
 % Pendulum length
 l = input('Pendulum length (m): ');
 % Gravitational acceleration
