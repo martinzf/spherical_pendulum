@@ -49,7 +49,7 @@ $$t=\pm\frac{1}{\sqrt{2}}\int_{\alpha_0}\frac{d\alpha}{\sqrt{h-U(\alpha)}}$$
 $$\varphi-\varphi_0=p_\varphi\int_0\frac{dt}{\sin^{2}\alpha}
 $$
 
-Note $h-U(\alpha),\;\alpha\in(0, \pi)$ has either one (stable equilibrium) or two (turning points) real roots, therefore so should  $(h-U(\alpha))\sin^2\alpha$. Let's perform the change of variables $\xi=\cos\alpha$:
+Note $h-U(\alpha),\,\alpha\in(0, \pi)$ has either one (stable equilibrium) or two (turning points) real roots, therefore so should  $(h-U(\alpha))\sin^2\alpha$. Let's perform the change of variables $\xi=\cos\alpha$:
 
 $$
 (h-U(\alpha))\sin^2\alpha\equiv p(\xi)=-\frac{g}{l}\xi^3-h\xi^2+\frac{g}{l}\xi+h-\frac{{p_\varphi}^2}{2}
@@ -66,6 +66,7 @@ If $\xi_1>\xi_2>\xi_3$ are the roots of $p(\xi)$, to solve the problem we must s
 $$
 \lambda t\sqrt{2l/g} = F(\phi| m_1)
 $$
+
 $$
 \lambda=\frac{1}{2}\sqrt{\xi_1-\xi_3}, \quad
 m_1=\frac{\xi_1- \xi_2}{\xi_1- \xi_3}, \quad

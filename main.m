@@ -1,8 +1,8 @@
-clear; clf; clc
+clear; clc
 
 % Initial conditions
 t0 = 0;
-dt = 1e-3;
+dt = 1/20;
 [tf,alpha0,d_alpha0,phi0,d_phi0,l,g,p_phi] = params();
 t = 0:dt:tf;
 
@@ -21,5 +21,4 @@ else
     [alpha, phi] = general(alpha0,d_alpha0,phi0,d_phi0,l,g,p_phi,t);
 end
 
-plot(t, alpha, t, phi)
-%animate(framedur,dur,theta,phi,l)
+animate(dt,tf,alpha,phi,l)
