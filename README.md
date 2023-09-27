@@ -1,5 +1,7 @@
 # spherical_pendulum
 ### About
+CURRENTLY UNDER MODIFICATION
+DOESN'T WORK
 MATLAB R2022a project for plotting an animated spherical pendulum given 
 certain initial conditions.
 
@@ -19,25 +21,62 @@ Using generalised coordinates $\theta$ (polar angle) and $\varphi$
 (azimuthal angle), one can compute the Lagrangian of a spherical pendulum
 with a bob of mass $m$ and rod of length $l$ to be:
 
-$$L=ml^2[\frac{1}{2}(\dot{\theta}^2+\sin^{2}(\theta)\dot{\varphi}^2)
--\frac{g}{l}\cos(\theta)]$$ 
+$$L=ml^2\left[\frac{1}{2}(\dot{\theta}^2+\dot{\varphi}^2\sin^{2}\theta)
+-\frac{g}{l}\cos\theta\right]\propto\frac{1}{2}(\dot{\theta}^2+\dot{\varphi}^2\sin^{2}\theta)
+-\frac{g}{l}\cos\theta$$ 
 
-This results in the following Euler-Lagrange equations:
+Or in terms of the angle wrt the vertical, $\alpha=\pi-\theta$:
 
-$$\ddot{\theta}=\sin(\theta)\cos(\theta)\dot{\varphi}^2$$
+$$\tilde{L}=\frac{1}{2}(\dot{\alpha}^2+\dot{\varphi}^2\sin^{2}\alpha)
++\frac{g}{l}\cos\alpha$$ 
 
-$$\sin^{2}(\theta)\dot{\varphi}=const.\equiv c$$
+With canonical azimuthal momentum:
 
-Using the energy integral, the equation for $\theta$ can be simplified, 
-and we obtain the equation of motion of an effective particle in a 1D
-potential:
+$$p_\varphi=\dot{\varphi}\sin^{2}\alpha=const.$$
 
-$$\frac{1}{2}\dot{\theta}^2+U(\theta)=\varepsilon$$
+The system is at equilibrium for $\alpha=0,\pi,\,\dot{\alpha}=0$, and acts as a simple pendulum if $p_\varphi=0$. For other trajectories, the energy integral yields the equation of motion of an effective particle in a 1D potential:
 
-$$U(\theta)=\frac{c^2}{2\sin^{2}(\theta)}+\frac{g}{l}\cos(\theta)$$
+$$h=\frac{1}{2}\dot{\alpha}^2+U(\alpha)$$
+
+$$U(\alpha)=\frac{{p_\varphi}^2}{2\sin^{2}\alpha}-\frac{g}{l}\cos\alpha$$
+
+![Alt Text](potential.png)
 
 And thus the problem is reduced to quadratures:
 
-$$t=\pm\int\frac{d\theta}{\sqrt{\varepsilon-U(\theta)}}$$
+$$t=\pm\frac{1}{\sqrt{2}}\int_{\alpha_0}\frac{d\alpha}{\sqrt{h-U(\alpha)}}$$
 
-$$\varphi=c\int\frac{dt}{\sin^{2}(\theta)}$$
+$$\varphi-\varphi_0=p_\varphi\int_0\frac{dt}{\sin^{2}\alpha}
+$$
+
+Note $h-U(\alpha),\;\alpha\in(0, \pi)$ has either one (stable equilibrium) or two (turning points) real roots, therefore so should  $(h-U(\alpha))\sin^2\alpha$. Let's perform the change of variables $\xi=\cos\alpha$:
+
+$$
+(h-U(\alpha))\sin^2\alpha\equiv p(\xi)=-\frac{g}{l}\xi^3-h\xi^2+\frac{g}{l}\xi+h-\frac{{p_\varphi}^2}{2}
+$$
+
+Applying the change of variables $d\xi=-\sin\alpha\,d\alpha$, we obtain
+
+$$
+t=\mp\frac{1}{\sqrt{2}}\int_{\cos\alpha_0}\frac{d\xi}{\sqrt{p(\xi)}}
+$$
+
+If $\xi_1>\xi_2>\xi_3$ are the roots of $p(\xi)$, to solve the problem we must succesively integrate between the two roots $\in(-1,1)$. From Abrahamovitz and Stegun p. 597 table 17.4.61:
+
+$$
+\lambda t\sqrt{2l/g} = F(\phi| m_1)
+$$
+$$
+\lambda=\frac{1}{2}\sqrt{\xi_1-\xi_3}, \quad
+m_1=\frac{\xi_1- \xi_2}{\xi_1- \xi_3}, \quad
+\sin^2\phi=\frac{(\xi_1-\xi_3)(\xi-\xi_2)}{(\xi_1-\xi_2)(\xi-\xi_3)}
+$$
+
+And we finally obtain:
+
+$$
+\cos\alpha=\frac{m_1\xi_3\sin^2\phi-\xi_2}{m_1\sin^2\phi-1}, \quad
+\sin\phi=\mathrm{sn}(\lambda t\sqrt{2l/g}|m_1)
+$$
+
+with $\cos\alpha\in[\xi_2,\xi_1]$. We then integrate to obtain $\varphi(t)$.
