@@ -90,7 +90,9 @@ $$
 \sin\phi=\mathrm{sn}(\lambda t\sqrt{2g/l}+\epsilon_0|m_1)
 $$
 
-where $\epsilon_0$ can be calculated setting $\alpha=\alpha_0$, $t=0$.
+where $\epsilon_0$ makes it so that $\alpha(t=0)=\alpha_0$ and can be 
+calculated setting $\alpha=\alpha_0$, $t=0$. We then numerically integrate
+$\varphi(t)$.
 
 This derivation is for illustrative purposes, be careful with signs and
 different particular cases.
