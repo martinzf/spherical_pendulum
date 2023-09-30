@@ -1,8 +1,8 @@
-function [tf,alpha0,d_alpha0,phi0,d_phi0,l,g,p_phi] = params()
+function [tf,alpha0,d_alpha0,phi0,p_phi,l,g] = params()
 % Function requests initial conditions
     tf = input('Duration (s): ');
-    alpha0 = input('Initial angle wrt vertical (rad): ');
-    d_alpha0 = input('Initial upward angular velocity (rad/s): ');
+    alpha0 = input('Initial south inclination (rad): ');
+    d_alpha0 = input('Initial polar (up) velocity (rad/s): ');
     % If at equilibrium
     if (alpha0 == 0 || alpha0 == pi) && d_alpha0 == 0
         phi0 = 0;
