@@ -74,7 +74,7 @@ must succesively integrate between the two roots $\in(-1,1)$. From
 Abrahamovitz and Stegun p. 597 table 17.4.61:
 
 $$
-\lambda t\sqrt{2g/l} +\epsilon_0 = F(\phi| m_1)
+\mp\lambda t\sqrt{2g/l} +\epsilon_0 = F(\phi| m_1)
 $$
 
 $$
@@ -87,7 +87,7 @@ And we finally obtain:
 
 $$
 \cos\alpha=\frac{m_1\xi_3\sin^2\phi-\xi_2}{m_1\sin^2\phi-1}, \quad
-\sin\phi=\mathrm{sn}(\lambda t\sqrt{2g/l}+\epsilon_0|m_1)
+\sin\phi=\mathrm{sn}(\mp\lambda t\sqrt{2g/l}+\epsilon_0|m_1)
 $$
 
 where $\epsilon_0$ makes it so that $\alpha(t=0)=\alpha_0$ and can be 
