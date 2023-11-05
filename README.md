@@ -14,7 +14,7 @@ N.B.: The animation might lag a bit, especially the first few seconds and
 maybe while rotating the figure.
 
 ### Preview
-<p align="center"> <img src="preview.gif" width="300"> </p>
+<p align="center"> <img src="preview.gif" width="400"> </p>
 
 ### Theory
 Using generalised coordinates $\theta$ (polar angle) and $\varphi$ 
@@ -44,7 +44,7 @@ $$h=\frac{1}{2}\dot{\alpha}^2+U(\alpha)$$
 
 $$U(\alpha)=\frac{{p_\varphi}^2}{2\sin^{2}\alpha}-\frac{g}{l}\cos\alpha$$
 
-<p align="center"> <img src="potential.png" width="300"> </p>
+<p align="center"> <img src="potential.png" width="400"> </p>
 
 And thus the problem is reduced to quadratures:
 
