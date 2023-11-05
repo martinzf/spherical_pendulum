@@ -10,6 +10,7 @@ certain initial conditions.
 * Answer the prompts in the `Command Window`, hitting enter after 
 inputting each value.
 * Wait while the animation loads, MATLAB should open a figure window.
+
 N.B.: The animation might lag a bit, especially the first few seconds and 
 maybe while rotating the figure.
 
@@ -35,7 +36,7 @@ With canonical azimuthal momentum:
 
 $$p_\varphi=\dot{\varphi}\sin^{2}\alpha=const.$$
 
-The system is at equilibrium for $\alpha=0,\pi,\,\dot{\alpha}=0$, and acts 
+The system is at equilibrium for $\alpha=0,\pi$, $\dot{\alpha}=0$, and acts 
 as a simple pendulum if $p_\varphi=0$. For other trajectories the energy 
 integral yields a more complicated equation of motion, similar to that of 
 an effective particle in a 1D potential:
