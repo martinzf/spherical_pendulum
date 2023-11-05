@@ -15,7 +15,7 @@ function alpha = simple_pend(alpha0,d_alpha0,l,g,t)
         cd = cn./dn;
         alpha = 2*asin(k*cd);
     % Bounded
-    elseif h == g/l 
+    elseif abs(h - g/l) < eps 
         e0 = atanh(sin(alpha0/2));
         alpha = 2*asin(tanh(sgn*sqrt(g/l)*t+e0)); % Expression evaluated at (t-t0)
     % Unbounded

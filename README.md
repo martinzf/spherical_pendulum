@@ -14,7 +14,7 @@ N.B.: The animation might lag a bit, especially the first few seconds and
 maybe while rotating the figure.
 
 ### Preview
-![Alt Text](preview.gif)
+<img src="preview.gif" width="200"> 
 
 ### Theory
 Using generalised coordinates $\theta$ (polar angle) and $\varphi$ 
@@ -36,15 +36,15 @@ With canonical azimuthal momentum:
 $$p_\varphi=\dot{\varphi}\sin^{2}\alpha=const.$$
 
 The system is at equilibrium for $\alpha=0,\pi,\,\dot{\alpha}=0$, and acts 
-as a simple pendulum if $p_\varphi=0$. For other trajectories, the energy 
-integral yields the equation of motion of an effective particle in a 1D 
-potential:
+as a simple pendulum if $p_\varphi=0$. For other trajectories the energy 
+integral yields a more complicated equation of motion, similar to that of 
+an effective particle in a 1D potential:
 
 $$h=\frac{1}{2}\dot{\alpha}^2+U(\alpha)$$
 
 $$U(\alpha)=\frac{{p_\varphi}^2}{2\sin^{2}\alpha}-\frac{g}{l}\cos\alpha$$
 
-![Alt Text](potential.png)
+<img src="potential.png" width="200"> 
 
 And thus the problem is reduced to quadratures:
 

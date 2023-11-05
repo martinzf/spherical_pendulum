@@ -1,6 +1,6 @@
 function [alpha,phi] = general(alpha0,d_alpha0,phi0,p_phi,l,g,t)
     % Equilibrium in alpha
-    if sin(alpha0)^4/cos(alpha0) == p_phi^2*l/g
+    if abs(sin(alpha0)^4/cos(alpha0) - p_phi^2*l/g) < eps
         alpha = alpha0*ones(length(t));
         phi = mod(phi0 + p_phi/sin(alpha0)^2*t, 2*pi);
     % Generic case
